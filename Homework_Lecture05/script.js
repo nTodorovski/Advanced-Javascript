@@ -151,6 +151,7 @@ $("#goHome").click(function(){
     $("#people").addClass("display-none");
     $("#planets").addClass("display-none");
     $("#table").hide();
+    $(".logo").show();
     $("#izmislena").remove();
 });
  
@@ -161,7 +162,7 @@ $("button").click(function(){
     if(name === ""){
         $(".logo").hide();
         $("#table").hide();
-        $(`<p id="error">`).text("Error").css("cssText","color:red !important;font-size: 40px !important;background-color: white !important").appendTo($(".container"));;
+        $(`<p id="error">`).text("Error!!! Empty input.").css("cssText","color:red !important;font-size: 40px !important;background-color: white !important").appendTo($(".container"));;
         setTimeout(function(){
             if(flag2 === 0){
                 $("#table").show();
@@ -172,7 +173,7 @@ $("button").click(function(){
     }else{
         if(size === undefined && size1 === undefined){
             $(".logo").hide();
-            let h =$(`<p id="error1">`).text("Error").appendTo($(".container"));
+            let h =$(`<p id="error1">`).text("Error!!! Make calls first.").appendTo($(".container"));
             h.css("cssText","color:red !important;font-size: 40px !important;background-color: white !important");
             setTimeout(function(){ 
                 $(".logo").show();
@@ -218,7 +219,7 @@ $("button").click(function(){
                 $("input").val("");
                 $(".logo").hide();
                 $("table").hide();
-                let err =$("<p>").text("Error").appendTo($(".container"));
+                let err =$("<p>").text("Error!!! Cannot find.").appendTo($(".container"));
                 err.css("cssText","color:red !important;font-size: 40px !important;background-color: white !important");
                 setTimeout(function(){ 
                     $("table").show();
