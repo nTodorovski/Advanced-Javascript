@@ -186,13 +186,10 @@ $("button").click(function(){
                     let name1 = people1[i].personname.toLowerCase();
                     if(name1.includes(name) || people1[i].gender === name || people1[i].birthyear.includes(name) || people1[i].height.includes(name) || people1[i].mass.includes(name)){
                         flag = 1;
-                        $("tbody").empty();
                         arr.push(people1[i]);
                     }
                 }
                 if(flag === 1){
-                    makeTablePeople(arr);
-                    $("input").val("");
                     arrPeople = arr;
                 }
             }
@@ -210,8 +207,6 @@ $("button").click(function(){
                 }
                 
                 if(flag1 === 1){
-                    makeTablePlanets(arr1);
-                    $("input").val("");
                     arrPlanets = arr1;
                 }
             }   
@@ -228,6 +223,7 @@ $("button").click(function(){
             }
     
             if(arrPeople.length>0 && arrPlanets.length>0){
+                $("#izmislena").empty();
                 $("#body").empty();
                 makeTablePeople(arrPeople);
                 let table = $(`<table id="izmislena" class="table table-striped table-hover">`);
@@ -254,7 +250,19 @@ $("button").click(function(){
                     </tr>`)
                 }
                 table.prependTo("#div2");
-            }
+                arrPeople = [];
+                arrPlanets = [];
+            }else if (arrPeople.length>0 && arrPlanets.length === 0){
+                $("#izmislena").empty();
+                $("#body").empty();
+                makeTablePeople(arrPeople);
+                arrPeople = [];
+            }else if(arrPeople.length === 0 && arrPlanets.length > 0){
+                $("#izmislena").empty();
+                $("#body").empty();
+                makeTablePlanets(arrPlanets);
+                arrPlanets =[];
+            }   
             flag = 0;
             flag1 = 0;
         }
