@@ -88,13 +88,13 @@ function getPeople(people){
 
     $("tbody").empty();
 
-    for(i=0;i<people.length;i++){
+    for (const person of people) {
         $("tbody").append(`<tr>
-        <td>${people[i].personname}</td>
-        <td>${people[i].gender}</td>
-        <td>${people[i].birthyear}</td>
-        <td>${people[i].height}</td>
-        <td>${people[i].mass}</td>
+        <td>${person.personname}</td>
+        <td>${person.gender}</td>
+        <td>${person.birthyear}</td>
+        <td>${person.height}</td>
+        <td>${person.mass}</td>
         </tr>`);
     }
 }
@@ -114,14 +114,14 @@ function getPlanets(planets){
 
     $("tbody").empty();
 
-    for(i=0;i<planets.length;i++){
+    for (const planet of planets) {
         $("tbody").append(`<tr>
-        <td>${planets[i].planetname}</td>
-        <td>${planets[i].diameter}</td>
-        <td>${planets[i].climate}</td>
-        <td>${planets[i].terrain}</td>
-        <td>${planets[i].rotationperiod}</td>
-        <td>${planets[i].population}</td>
+        <td>${planet.planetname}</td>
+        <td>${planet.diameter}</td>
+        <td>${planet.climate}</td>
+        <td>${planet.terrain}</td>
+        <td>${planet.rotationperiod}</td>
+        <td>${planet.population}</td>
         </tr>`);
     }
 }
@@ -149,8 +149,7 @@ $("#goHome").click(function(){
  
 $("button").click(function(){
     $("th").css("color","black");
-    name = $("input").val();
-    name = name.toLowerCase();
+    name = $("input").val().toLowerCase();
     if(name === ""){
         $(".logo").hide();
         $("#table").hide();
