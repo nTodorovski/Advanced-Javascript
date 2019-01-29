@@ -1,7 +1,5 @@
 let people;
-let people1;
 let planets;
-let planets1;
 let size;
 let size1;
 let name;
@@ -21,9 +19,17 @@ function ajaxCallPeople(){
         $.ajax({
             method: "GET",
             url: "https://swapi.co/api/people",
-            success: function(response){
-                let people1 = response;
-                getPeople(people1);
+            success: function(response){         
+                people = response.results.map(function(item){
+                    return {
+                        personname:item.name,
+                        gender:item.gender,
+                        birthyear:item.birth_year,
+                        height:item.height,
+                        mass:item.mass
+                    }
+                });
+                getPeople(people);
             },
             error: function(response){
                 console.log("The request failed!");
@@ -44,8 +50,17 @@ function ajaxCallPlanets(){
             method: "GET",
             url: "https://swapi.co/api/planets",
             success: function(response){
-                let planets1 = response;
-                getPlanets(planets1);
+                planets = response.results.map(function(item){
+                    return {
+                        planetname:item.name,
+                        diameter:item.diameter,
+                        climate:item.climate,
+                        terrain:item.terrain,
+                        rotationperiod:item.rotation_period,
+                        population:item.population
+                    }
+                });
+                getPlanets(planets);
             },
             error: function(response){
                 console.log("The request failed!");
@@ -58,8 +73,7 @@ function ajaxCallPlanets(){
 }
  
  
-function getPeople(data){
-    people = data;
+function getPeople(people){
     size = Object.keys(people).length;
     if($("#izmislena")){
         $("#izmislena").remove();
@@ -74,29 +88,18 @@ function getPeople(data){
 
     $("tbody").empty();
 
-    people1 = people.results.map(function(item){
-        return {
-            personname:item.name,
-            gender:item.gender,
-            birthyear:item.birth_year,
-            height:item.height,
-            mass:item.mass
-        }
-    });
-
-    for(i=0;i<people1.length;i++){
+    for(i=0;i<people.length;i++){
         $("tbody").append(`<tr>
-        <td>${people1[i].personname}</td>
-        <td>${people1[i].gender}</td>
-        <td>${people1[i].birthyear}</td>
-        <td>${people1[i].height}</td>
-        <td>${people1[i].mass}</td>
+        <td>${people[i].personname}</td>
+        <td>${people[i].gender}</td>
+        <td>${people[i].birthyear}</td>
+        <td>${people[i].height}</td>
+        <td>${people[i].mass}</td>
         </tr>`);
     }
 }
  
-function getPlanets(data){
-    planets = data;
+function getPlanets(planets){
     size1 = Object.keys(planets).length;
     if($("#izmislena")){
         $("#izmislena").remove();
@@ -111,25 +114,14 @@ function getPlanets(data){
 
     $("tbody").empty();
 
-    planets1 = planets.results.map(function(item){
-        return {
-            planetname:item.name,
-            diameter:item.diameter,
-            climate:item.climate,
-            terrain:item.terrain,
-            rotationperiod:item.rotation_period,
-            population:item.population
-        }
-    });
-
-    for(i=0;i<planets1.length;i++){
+    for(i=0;i<planets.length;i++){
         $("tbody").append(`<tr>
-        <td>${planets1[i].planetname}</td>
-        <td>${planets1[i].diameter}</td>
-        <td>${planets1[i].climate}</td>
-        <td>${planets1[i].terrain}</td>
-        <td>${planets1[i].rotationperiod}</td>
-        <td>${planets1[i].population}</td>
+        <td>${planets[i].planetname}</td>
+        <td>${planets[i].diameter}</td>
+        <td>${planets[i].climate}</td>
+        <td>${planets[i].terrain}</td>
+        <td>${planets[i].rotationperiod}</td>
+        <td>${planets[i].population}</td>
         </tr>`);
     }
 }
@@ -182,11 +174,11 @@ $("button").click(function(){
         }else{
             if(size > 0){  
                 let arr = [];
-                for(i=0;i<people1.length;i++){
-                    let name1 = people1[i].personname.toLowerCase();
-                    if(name1.includes(name) || people1[i].gender === name || people1[i].birthyear.includes(name) || people1[i].height.includes(name) || people1[i].mass.includes(name)){
+                for(i=0;i<people.length;i++){
+                    let name1 = people[i].personname.toLowerCase();
+                    if(name1.includes(name) || people[i].gender === name || people[i].birthyear.includes(name) || people[i].height.includes(name) || people[i].mass.includes(name)){
                         flag = 1;
-                        arr.push(people1[i]);
+                        arr.push(people[i]);
                     }
                 }
                 if(flag === 1){
@@ -197,12 +189,12 @@ $("button").click(function(){
             if(size1 > 0){    
                 let arr1 = [];
         
-                for(i=0;i<planets1.length;i++){
-                    let name2 = planets1[i].planetname.toLowerCase();
-                    if(name2.includes(name) || planets1[i].diameter.includes(name) || planets1[i].climate.includes(name) || planets1[i].terrain.includes(name) || planets1[i].rotationperiod.includes(name) || planets1[i].population.includes(name)){
+                for(i=0;i<planets.length;i++){
+                    let name2 = planets[i].planetname.toLowerCase();
+                    if(name2.includes(name) || planets[i].diameter.includes(name) || planets[i].climate.includes(name) || planets[i].terrain.includes(name) || planets[i].rotationperiod.includes(name) || planets[i].population.includes(name)){
                         flag1 = 1;
                         $("tbody").empty();
-                        arr1.push(planets1[i]);
+                        arr1.push(planets[i]);
                     }
                 }
                 
@@ -307,39 +299,39 @@ $("th").on("click", (event) => {
     $(event.currentTarget).css("color","red");
     let name = c.toLowerCase().replace(" ","");
 
-    if(planets1){
-        if(planets1[0].hasOwnProperty(name)){
+    if(planets){
+        if(planets[0].hasOwnProperty(name)){
             $("#body").empty();
             if(name === "planetname"){
-                sortirana = planets1.sort((f, s) => f.planetname.localeCompare(s.planetname));
+                sortirana = planets.sort((f, s) => f.planetname.localeCompare(s.planetname));
                 makeTablePlanets(sortirana);
             }else if(name === "climate"){
-                sortirana = planets1.sort((f, s) => f.climate.localeCompare(s.climate));
+                sortirana = planets.sort((f, s) => f.climate.localeCompare(s.climate));
                 makeTablePlanets(sortirana);
             }else if(name === "terrain"){
-                sortirana = planets1.sort((f, s) => f.terrain.localeCompare(s.terrain));
+                sortirana = planets.sort((f, s) => f.terrain.localeCompare(s.terrain));
                 makeTablePlanets(sortirana);
             }else{
-                sortirana = planets1.sort(makeSorter(name));
+                sortirana = planets.sort(makeSorter(name));
                 makeTablePlanets(sortirana);
             }
         }
     }
 
-    if(people1){
-        if(people1[0].hasOwnProperty(name)){
+    if(people){
+        if(people[0].hasOwnProperty(name)){
             $("#body").empty();
             if(name === "personname"){
-                sortirana1 = people1.sort((f, s) => f.personname.localeCompare(s.personname));
+                sortirana1 = people.sort((f, s) => f.personname.localeCompare(s.personname));
                 makeTablePeople(sortirana1);
             }else if(name === "gender"){
-                sortirana1 = people1.sort((f, s) => f.gender.localeCompare(s.gender));
+                sortirana1 = people.sort((f, s) => f.gender.localeCompare(s.gender));
                 makeTablePeople(sortirana1);
             }else if(name === "birthyear"){
-                sortirana1 = people1.sort((f, s) => f.birthyear.toLowerCase().localeCompare(s.birthyear.toLowerCase()));
+                sortirana1 = people.sort((f, s) => f.birthyear.toLowerCase().localeCompare(s.birthyear.toLowerCase()));
                 makeTablePeople(sortirana1);
             }else{
-                sortirana1 = people1.sort(makeSorter(name));
+                sortirana1 = people.sort(makeSorter(name));
                 makeTablePeople(sortirana1);
             }
         }
