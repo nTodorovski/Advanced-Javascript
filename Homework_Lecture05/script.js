@@ -2,7 +2,6 @@ let people;
 let planets;
 let size;
 let size1;
-let name;
 let flag = 0;
 let flag1 = 0;
 let flag2 = 0;
@@ -149,7 +148,7 @@ $("#goHome").click(function(){
  
 $("button").click(function(){
     $("th").css("color","black");
-    name = $("input").val().toLowerCase();
+    let name = $("input").val().toLowerCase();
     if(name === ""){
         $(".logo").hide();
         $("#table").hide();
@@ -173,6 +172,7 @@ $("button").click(function(){
         }else{
             if(size > 0){  
                 let arr = [];
+
                 for(i=0;i<people.length;i++){
                     let name1 = people[i].personname.toLowerCase();
                     if(name1.includes(name) || people[i].gender === name || people[i].birthyear.includes(name) || people[i].height.includes(name) || people[i].mass.includes(name)){
@@ -228,16 +228,17 @@ $("button").click(function(){
                         <th>Population</th>
                     </tr>
                 </thead>`);
+
                 let tbody = $(`<tbody id="body">`).appendTo(table);
-    
-                for(i=0;i<arrPlanets.length;i++){
+
+                for (const planet of arrPlanets) {
                     tbody.append(`<tr>
-                    <td>${arrPlanets[i].planetname}</td>
-                    <td>${arrPlanets[i].diameter}</td>
-                    <td>${arrPlanets[i].climate}</td>
-                    <td>${arrPlanets[i].terrain}</td>
-                    <td>${arrPlanets[i].rotationperiod}</td>
-                    <td>${arrPlanets[i].population}</td>
+                    <td>${planet.planetname}</td>
+                    <td>${planet.diameter}</td>
+                    <td>${planet.climate}</td>
+                    <td>${planet.terrain}</td>
+                    <td>${planet.rotationperiod}</td>
+                    <td>${planet.population}</td>
                     </tr>`)
                 }
                 table.prependTo("#div2");
@@ -264,15 +265,16 @@ function makeTablePeople(arr){
     $("#planets").addClass("display-none");
     $("#people").removeClass("display-none");
 
-    for(i=0;i<arr.length;i++){
+    for (const person of arr) {
         $("tbody").append(`<tr>
-            <td>${arr[i].personname}</td>
-            <td>${arr[i].gender}</td>
-            <td>${arr[i].birthyear}</td>
-            <td>${arr[i].height}</td>
-            <td>${arr[i].mass}</td>
-        </tr>`)
+        <td>${person.personname}</td>
+        <td>${person.gender}</td>
+        <td>${person.birthyear}</td>
+        <td>${person.height}</td>
+        <td>${person.mass}</td>
+    </tr>`)
     }
+
     $("table").show();
 }
 
@@ -280,16 +282,17 @@ function makeTablePlanets(arr1){
     $("#planets").removeClass("display-none");
     $("#people").addClass("display-none");
 
-    for(i=0;i<arr1.length;i++){
+    for (const planet of arr1) {
         $("tbody").append(`<tr>
-            <td>${arr1[i].planetname}</td>
-            <td>${arr1[i].diameter}</td>
-            <td>${arr1[i].climate}</td>
-            <td>${arr1[i].terrain}</td>
-            <td>${arr1[i].rotationperiod}</td>
-            <td>${arr1[i].population}</td>
-        </tr>`)
+        <td>${planet.planetname}</td>
+        <td>${planet.diameter}</td>
+        <td>${planet.climate}</td>
+        <td>${planet.terrain}</td>
+        <td>${planet.rotationperiod}</td>
+        <td>${planet.population}</td>
+    </tr>`)
     }
+
     $("table").show();
 }
 $("th").on("click", (event) => {
