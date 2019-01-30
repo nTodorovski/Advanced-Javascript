@@ -324,7 +324,6 @@ function makeTablePlanets(arr1) {
 $("th").on("click", (event) => {
     $("th").css("color", "black");
     let name = event.currentTarget.innerHTML.toLowerCase().replace(" ", "");
-    console.log(name)
     let sortirana = [];
     let sortirana1 = [];
     if (allPlanets.length > 0) {
