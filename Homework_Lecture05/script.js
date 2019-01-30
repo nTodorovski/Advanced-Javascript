@@ -1,82 +1,140 @@
-let people;
-let planets;
-let size;
-let size1;
-let flag = 0;
-let flag1 = 0;
-let flag2 = 0;
-let arrPeople = [];
-let arrPlanets = [];
-let sortirana;
-let sortirana1;
+let allResultsPeople = []; //site lugje so site properties
+let allResultsPlanets = []; //site planeti so site properties
+let allPeople = []; // site lugje so properties sto mene mi trebaat samo
+let allPlanets = []; // site planeti so propeties sto mene mi trebaat samo
 
-function ajaxCallPeople(){
-    if(size === undefined){
+let size;//goleminata na allPeople
+let size1;//goleminata na allPlanets
+let flag2 = 0;//proverka za dali se naogjam na Home,People ili Planets
+
+let peopleUrl = "https://swapi.co/api/people";
+
+let planetsUrl = "https://swapi.co/api/planets";
+
+function ajaxCallPeople(url) {
+    if (size === undefined) {
         $("#table").hide();
         $("#spinner").removeClass("display-none");
         $(".logo").hide();
-        $.ajax({
-            method: "GET",
-            url: "https://swapi.co/api/people",
-            success: function(response){         
-                people = response.results.map(function(item){
+        if (url === null) {
+            getPeople(allPeople);
+            return;
+        }
+        fetch(url)
+            .then(function (response) {
+                return response.json();
+            })
+            .then(function (myJson) {
+                allResultsPeople.push(myJson.results.map((item) => item));
+                allResultsPeople = [].concat.apply([], allResultsPeople);
+
+                let people = myJson.results.map(function (item) {
                     return {
-                        personname:item.name,
-                        gender:item.gender,
-                        birthyear:item.birth_year,
-                        height:item.height,
-                        mass:item.mass
+                        personname: item.name,
+                        gender: item.gender,
+                        birthyear: item.birth_year,
+                        height: item.height,
+                        mass: item.mass
                     }
                 });
-                getPeople(people);
-            },
-            error: function(response){
-                console.log("The request failed!");
-                console.log(response.responseText);
-            }
-        });
-    }else{
-        getPeople(people);
+                allPeople = allPeople.concat(people);
+                ajaxCallPeople(myJson.next);
+            })
+            .catch(error => console.error('Error:', error));
+    } else {
+        getPeople(allPeople);
     }
 }
- 
-function ajaxCallPlanets(){
-    if(size1 === undefined){
+
+function ajaxCallPlanets(url) {
+    if (size1 === undefined) {
         $("#table").hide();
         $("#spinner").removeClass("display-none");
         $(".logo").hide();
-        $.ajax({
-            method: "GET",
-            url: "https://swapi.co/api/planets",
-            success: function(response){
-                planets = response.results.map(function(item){
+        if (url === null) {
+            getPlanets(allPlanets);
+            return;
+        }
+        fetch(url)
+            .then(function (response) {
+                return response.json();
+            })
+            .then(function (myJson) {
+                allResultsPlanets.push(myJson.results.map((item) => item));
+                allResultsPlanets = [].concat.apply([], allResultsPlanets);
+
+                let planets = myJson.results.map(function (item) {
                     return {
-                        planetname:item.name,
-                        diameter:item.diameter,
-                        climate:item.climate,
-                        terrain:item.terrain,
-                        rotationperiod:item.rotation_period,
-                        population:item.population
+                        planetname: item.name,
+                        diameter: item.diameter,
+                        climate: item.climate,
+                        terrain: item.terrain,
+                        rotationperiod: item.rotation_period,
+                        population: item.population
                     }
                 });
-                getPlanets(planets);
-            },
-            error: function(response){
-                console.log("The request failed!");
-                console.log(response.responseText);
-            }
-        });
-    }else{
-        getPlanets(planets);
+                allPlanets = allPlanets.concat(planets);
+                ajaxCallPlanets(myJson.next);
+            })
+            .catch(error => console.error('Error:', error));
+    } else {
+        getPlanets(allPlanets);
     }
 }
- 
- 
-function getPeople(people){
-    size = Object.keys(people).length;
-    if($("#izmislena")){
-        $("#izmislena").remove();
+
+function findPerson(){
+    $("tbody tr").click((event)=>{
+        let name = event.currentTarget.firstElementChild.innerHTML;
+        for (const person of allResultsPeople) {
+            if(person.name === name){
+                showStats(person);
+            }
+        }
+    });
+}
+
+function findPlanet(){
+    $("tbody tr").click((event)=>{
+        let name = event.currentTarget.firstElementChild.innerHTML;
+        for (const planet of allResultsPlanets) {
+            if(planet.name === name){
+                showStats(planet);
+            }
+        }
+    });
+}
+
+function showStats(person){
+    $("#dialog").empty();
+    let p = $("<p>");
+    p.css("background-color","white","color","black")
+    let dialog = $("#dialog");
+    $("#dialog").dialog({
+        title: ''
+    });
+
+    let entries = Object.entries(person);
+    let k = '';
+    for (const key of entries) {
+        if(typeof key[1] === "object" && key[1].length > 1){
+            for (const string of key[1]) {
+                k = k+"<br>"+string;
+            }
+            p.append(`<p>
+                ${key[0]} : ${k}
+            </p>`);
+        }else{
+            p.append(`<p>
+                ${key[0]} : ${key[1]}
+            </p>`);
+        }
+        p.appendTo(dialog);
     }
+}
+
+function getPeople(allPeople) {
+    size = Object.keys(allPeople).length;
+
     $("#table").show();
     $(".logo").show();
     $("#spinner").addClass("display-none");
@@ -87,7 +145,7 @@ function getPeople(people){
 
     $("tbody").empty();
 
-    for (const person of people) {
+    for (const person of allPeople) {
         $("tbody").append(`<tr>
         <td>${person.personname}</td>
         <td>${person.gender}</td>
@@ -96,13 +154,13 @@ function getPeople(people){
         <td>${person.mass}</td>
         </tr>`);
     }
+
+    findPerson();
 }
- 
-function getPlanets(planets){
-    size1 = Object.keys(planets).length;
-    if($("#izmislena")){
-        $("#izmislena").remove();
-    }
+
+function getPlanets(allPlanets) {
+    size1 = Object.keys(allPlanets).length;
+
     $("#table").show();
     $(".logo").show();
     $("#spinner").addClass("display-none");
@@ -113,7 +171,7 @@ function getPlanets(planets){
 
     $("tbody").empty();
 
-    for (const planet of planets) {
+    for (const planet of allPlanets) {
         $("tbody").append(`<tr>
         <td>${planet.planetname}</td>
         <td>${planet.diameter}</td>
@@ -123,145 +181,113 @@ function getPlanets(planets){
         <td>${planet.population}</td>
         </tr>`);
     }
+    
+    findPlanet();
 }
- 
-$("#getPeople").click(function(){
+
+$("#getPeople").click(function () {
     flag2 = 0;
-    $("th").css("color","black");
-    ajaxCallPeople();
+    $("th").css("color", "black");
+    ajaxCallPeople(peopleUrl);
 });
- 
-$("#getPlanets").click(function(){
+
+$("#getPlanets").click(function () {
     flag2 = 0;
-    $("th").css("color","black");
-    ajaxCallPlanets();
+    $("th").css("color", "black");
+    ajaxCallPlanets(planetsUrl);
 });
- 
-$("#goHome").click(function(){
+
+$("#goHome , .navbar-brand").click(function () {
     flag2 = 1;
+    $("input").val("")
     $("#people").addClass("display-none");
     $("#planets").addClass("display-none");
     $("#table").hide();
     $(".logo").show();
-    $("#izmislena").remove();
 });
- 
-$("button").click(function(){
-    $("th").css("color","black");
+
+$("#search").click(function () {
+    $("th").css("color", "black");
+
+    let proverka = '';
+    if($("#people").hasClass("display-none")){
+        proverka = "planeti";
+    }else if($("#planets").hasClass("display-none")){
+        proverka = "lugje";
+    }
+
     let name = $("input").val().toLowerCase();
-    if(name === ""){
+    
+    if (name === "") {
         $(".logo").hide();
         $("#table").hide();
-        $(`<p id="error">`).text("Error!!! Empty input.").css("cssText","color:red !important;font-size: 40px !important;background-color: white !important").appendTo($(".container"));;
-        setTimeout(function(){
-            if(flag2 === 0){
+        $(`<p id="error">`).text("Error!!! Empty input.").css("cssText", "color:red !important;font-size: 40px !important;background-color: white !important").appendTo($(".container"));;
+        setTimeout(function () {
+            if (flag2 === 0) {
                 $("#table").show();
             }
             $(".logo").show();
             $("#error").remove();
         }, 2500);
-    }else{
-        if(size === undefined && size1 === undefined){
+    } else {
+        if (size === undefined && size1 === undefined) {
             $(".logo").hide();
-            let h =$(`<p id="error1">`).text("Error!!! Make calls first.").appendTo($(".container"));
-            h.css("cssText","color:red !important;font-size: 40px !important;background-color: white !important");
-            setTimeout(function(){ 
+            $(`<p id="error1">`).text("Error!!! Make calls first.").css("cssText", "color:red !important;font-size: 40px !important;background-color: white !important").appendTo($(".container"));
+            setTimeout(function () {
                 $(".logo").show();
                 $("#error1").remove();
             }, 2500);
-        }else{
-            if(size > 0){  
+        } else {
+            let flag = 0;
+            let flag1 = 0;
+            if (size > 0 && proverka === "lugje") {
                 let arr = [];
-
-                for(i=0;i<people.length;i++){
-                    let name1 = people[i].personname.toLowerCase();
-                    if(name1.includes(name) || people[i].gender === name || people[i].birthyear.includes(name) || people[i].height.includes(name) || people[i].mass.includes(name)){
+                for (const person of allPeople) {
+                    let name1 = person.personname.toLowerCase();
+                    if(name1.includes(name)){
                         flag = 1;
-                        arr.push(people[i]);
+                        arr.push(person);
                     }
                 }
-                if(flag === 1){
-                    arrPeople = arr;
+                if (flag === 1) {
+                    $("#body").empty();
+                    makeTablePeople(arr);
                 }
             }
-    
-            if(size1 > 0){    
+
+            if (size1 > 0 && proverka === "planeti") {
                 let arr1 = [];
-        
-                for(i=0;i<planets.length;i++){
-                    let name2 = planets[i].planetname.toLowerCase();
-                    if(name2.includes(name) || planets[i].diameter.includes(name) || planets[i].climate.includes(name) || planets[i].terrain.includes(name) || planets[i].rotationperiod.includes(name) || planets[i].population.includes(name)){
+
+                for (const planet of allPlanets) {
+                    let name2 = planet.planetname.toLowerCase();
+                    if(name2.includes(name)){
                         flag1 = 1;
-                        $("tbody").empty();
-                        arr1.push(planets[i]);
+                        arr1.push(planet);
                     }
                 }
-                
-                if(flag1 === 1){
-                    arrPlanets = arr1;
+                if (flag1 === 1) {
+                    $("#body").empty();
+                    makeTablePlanets(arr1);
                 }
-            }   
-            if(flag === 0 && flag1 === 0){
+            }
+
+            if (flag === 0 && flag1 === 0) {
                 $("input").val("");
                 $(".logo").hide();
                 $("table").hide();
-                let err =$("<p>").text("Error!!! Cannot find.").appendTo($(".container"));
-                err.css("cssText","color:red !important;font-size: 40px !important;background-color: white !important");
-                setTimeout(function(){ 
+                let err = $("<p>").text("Error!!! Cannot find.").appendTo($(".container"));
+                err.css("cssText", "color:red !important;font-size: 40px !important;background-color: white !important");
+                
+                setTimeout(function () {
                     $("table").show();
-                    err.hide();
+                    err.remove();
                 }, 2500);
             }
-    
-            if(arrPeople.length>0 && arrPlanets.length>0){
-                $("#izmislena").empty();
-                $("#body").empty();
-                makeTablePeople(arrPeople);
-                let table = $(`<table id="izmislena" class="table table-striped table-hover">`);
-                table.append(`<thead>
-                    <tr id="planets">
-                        <th>Planet Name</th>
-                        <th>Diameter</th>
-                        <th>Climate</th>
-                        <th>Terrain</th>
-                        <th>Rotation Period</th>
-                        <th>Population</th>
-                    </tr>
-                </thead>`);
-
-                let tbody = $(`<tbody id="body">`).appendTo(table);
-
-                for (const planet of arrPlanets) {
-                    tbody.append(`<tr>
-                    <td>${planet.planetname}</td>
-                    <td>${planet.diameter}</td>
-                    <td>${planet.climate}</td>
-                    <td>${planet.terrain}</td>
-                    <td>${planet.rotationperiod}</td>
-                    <td>${planet.population}</td>
-                    </tr>`)
-                }
-                table.prependTo("#div2");
-                arrPeople = [];
-                arrPlanets = [];
-            }else if (arrPeople.length>0 && arrPlanets.length === 0){
-                $("#izmislena").empty();
-                $("#body").empty();
-                makeTablePeople(arrPeople);
-                arrPeople = [];
-            }else if(arrPeople.length === 0 && arrPlanets.length > 0){
-                $("#izmislena").empty();
-                $("#body").empty();
-                makeTablePlanets(arrPlanets);
-                arrPlanets =[];
-            }   
-            flag = 0;
-            flag1 = 0;
         }
     }
 })
 
-function makeTablePeople(arr){
+function makeTablePeople(arr) {
     $("#planets").addClass("display-none");
     $("#people").removeClass("display-none");
 
@@ -278,7 +304,7 @@ function makeTablePeople(arr){
     $("table").show();
 }
 
-function makeTablePlanets(arr1){
+function makeTablePlanets(arr1) {
     $("#planets").removeClass("display-none");
     $("#people").addClass("display-none");
 
@@ -296,50 +322,32 @@ function makeTablePlanets(arr1){
     $("table").show();
 }
 $("th").on("click", (event) => {
-    $("th").css("color","black");
-    let c = event.currentTarget.innerHTML;
-    $(event.currentTarget).css("color","red");
-    let name = c.toLowerCase().replace(" ","");
-
-    if(planets){
-        if(planets[0].hasOwnProperty(name)){
-            $("#body").empty();
-            if(name === "planetname"){
-                sortirana = planets.sort((f, s) => f.planetname.localeCompare(s.planetname));
+    $("th").css("color", "black");
+    let name = event.currentTarget.innerHTML.toLowerCase().replace(" ", "");
+    
+    if (allPlanets.length > 0) {
+        if (allPlanets[0].hasOwnProperty(name)) {
+            if (name === "planetname") {
+                $(event.currentTarget).css("color", "red");
+                $("#body").empty();
+                let sortirana = [];
+                sortirana = allPlanets.sort((f, s) => f.planetname.localeCompare(s.planetname));
                 makeTablePlanets(sortirana);
-            }else if(name === "climate"){
-                sortirana = planets.sort((f, s) => f.climate.localeCompare(s.climate));
-                makeTablePlanets(sortirana);
-            }else if(name === "terrain"){
-                sortirana = planets.sort((f, s) => f.terrain.localeCompare(s.terrain));
-                makeTablePlanets(sortirana);
-            }else{
-                sortirana = planets.sort(makeSorter(name));
-                makeTablePlanets(sortirana);
+                findPlanet();
             }
         }
     }
 
-    if(people){
-        if(people[0].hasOwnProperty(name)){
-            $("#body").empty();
-            if(name === "personname"){
-                sortirana1 = people.sort((f, s) => f.personname.localeCompare(s.personname));
+    if (allPeople.length > 0) {
+        if (allPeople[0].hasOwnProperty(name)) {
+            if (name === "personname") {
+                $(event.currentTarget).css("color", "red");
+                $("#body").empty();
+                let sortirana1 = [];
+                sortirana1 = allPeople.sort((f, s) => f.personname.localeCompare(s.personname));
                 makeTablePeople(sortirana1);
-            }else if(name === "gender"){
-                sortirana1 = people.sort((f, s) => f.gender.localeCompare(s.gender));
-                makeTablePeople(sortirana1);
-            }else if(name === "birthyear"){
-                sortirana1 = people.sort((f, s) => f.birthyear.toLowerCase().localeCompare(s.birthyear.toLowerCase()));
-                makeTablePeople(sortirana1);
-            }else{
-                sortirana1 = people.sort(makeSorter(name));
-                makeTablePeople(sortirana1);
+                findPerson();
             }
         }
     }
 });
-
-function makeSorter(name) {
-    return (f, s) => f[name] - s[name];
-}
