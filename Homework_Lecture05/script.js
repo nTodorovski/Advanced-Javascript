@@ -324,13 +324,14 @@ function makeTablePlanets(arr1) {
 $("th").on("click", (event) => {
     $("th").css("color", "black");
     let name = event.currentTarget.innerHTML.toLowerCase().replace(" ", "");
-    
+    console.log(name)
+    let sortirana = [];
+    let sortirana1 = [];
     if (allPlanets.length > 0) {
         if (allPlanets[0].hasOwnProperty(name)) {
             if (name === "planetname") {
                 $(event.currentTarget).css("color", "red");
                 $("#body").empty();
-                let sortirana = [];
                 sortirana = allPlanets.sort((f, s) => f.planetname.localeCompare(s.planetname));
                 makeTablePlanets(sortirana);
                 findPlanet();
@@ -343,10 +344,16 @@ $("th").on("click", (event) => {
             if (name === "personname") {
                 $(event.currentTarget).css("color", "red");
                 $("#body").empty();
-                let sortirana1 = [];
                 sortirana1 = allPeople.sort((f, s) => f.personname.localeCompare(s.personname));
                 makeTablePeople(sortirana1);
                 findPerson();
+            }
+            if (name === "gender") {
+                $(event.currentTarget).css("color", "red");
+                $("#body").empty();
+                sortirana1 = allPeople.sort((f, s) => f.gender.localeCompare(s.gender));
+                makeTablePeople(sortirana1);
+                findPlanet();
             }
         }
     }
