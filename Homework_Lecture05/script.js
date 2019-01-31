@@ -209,13 +209,6 @@ $("#goHome , .navbar-brand").click(function () {
 $("#search").click(function () {
     $("th").css("color", "black");
 
-    let proverka = '';
-    if($("#people").hasClass("display-none")){
-        proverka = "planeti";
-    }else if($("#planets").hasClass("display-none")){
-        proverka = "lugje";
-    }
-
     let name = $("input").val().toLowerCase();
     
     if (name === "") {
@@ -240,7 +233,7 @@ $("#search").click(function () {
         } else {
             let flag = 0;
             let flag1 = 0;
-            if (size > 0 && proverka === "lugje") {
+            if (size > 0) {
                 let arr = [];
                 for (const person of allPeople) {
                     let name1 = person.personname.toLowerCase();
@@ -255,7 +248,7 @@ $("#search").click(function () {
                 }
             }
 
-            if (size1 > 0 && proverka === "planeti") {
+            if (size1 > 0) {
                 let arr1 = [];
 
                 for (const planet of allPlanets) {
@@ -321,6 +314,10 @@ function makeTablePlanets(arr1) {
 
     $("table").show();
 }
+let proverka = true;
+let proverka1 = true;
+let proverka2 = true;
+
 $("th").on("click", (event) => {
     $("th").css("color", "black");
     let name = event.currentTarget.innerHTML.toLowerCase().replace(" ", "");
@@ -329,11 +326,21 @@ $("th").on("click", (event) => {
     if (allPlanets.length > 0) {
         if (allPlanets[0].hasOwnProperty(name)) {
             if (name === "planetname") {
-                $(event.currentTarget).css("color", "red");
-                $("#body").empty();
-                sortirana = allPlanets.sort((f, s) => f.planetname.localeCompare(s.planetname));
-                makeTablePlanets(sortirana);
-                findPlanet();
+                if(proverka){
+                    $(event.currentTarget).css("color", "red");
+                    $("#body").empty();
+                    sortirana = allPlanets.sort((f, s) => f.planetname.localeCompare(s.planetname));
+                    makeTablePlanets(sortirana);
+                    findPlanet();
+                    proverka = false;
+                }else{
+                    $(event.currentTarget).css("color", "blue");
+                    $("#body").empty();
+                    sortirana = allPlanets.sort((f, s) => s.planetname.localeCompare(f.planetname));
+                    makeTablePlanets(sortirana);
+                    findPlanet();
+                    proverka = true;
+                }
             }
         }
     }
@@ -341,18 +348,38 @@ $("th").on("click", (event) => {
     if (allPeople.length > 0) {
         if (allPeople[0].hasOwnProperty(name)) {
             if (name === "personname") {
-                $(event.currentTarget).css("color", "red");
-                $("#body").empty();
-                sortirana1 = allPeople.sort((f, s) => f.personname.localeCompare(s.personname));
-                makeTablePeople(sortirana1);
-                findPerson();
+                if(proverka1){
+                    $(event.currentTarget).css("color", "red");
+                    $("#body").empty();
+                    sortirana1 = allPeople.sort((f, s) => f.personname.localeCompare(s.personname));
+                    makeTablePeople(sortirana1);
+                    findPerson();
+                    proverka1 = false;
+                }else{
+                    $(event.currentTarget).css("color", "blue");
+                    $("#body").empty();
+                    sortirana1 = allPeople.sort((f, s) => s.personname.localeCompare(f.personname));
+                    makeTablePeople(sortirana1);
+                    findPerson();
+                    proverka1 = true;
+                }
             }
             if (name === "gender") {
-                $(event.currentTarget).css("color", "red");
-                $("#body").empty();
-                sortirana1 = allPeople.sort((f, s) => f.gender.localeCompare(s.gender));
-                makeTablePeople(sortirana1);
-                findPlanet();
+                if(proverka2){
+                    $(event.currentTarget).css("color", "red");
+                    $("#body").empty();
+                    sortirana1 = allPeople.sort((f, s) => f.gender.localeCompare(s.gender));
+                    makeTablePeople(sortirana1);
+                    findPlanet();
+                    proverka2 = false;
+                }else{
+                    $(event.currentTarget).css("color", "blue");
+                    $("#body").empty();
+                    sortirana1 = allPeople.sort((f, s) => s.gender.localeCompare(f.gender));
+                    makeTablePeople(sortirana1);
+                    findPlanet();
+                    proverka2 = true;
+                }
             }
         }
     }
