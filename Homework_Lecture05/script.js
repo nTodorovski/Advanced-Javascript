@@ -82,54 +82,71 @@ function ajaxCallPlanets(url) {
     }
 }
 
-function findPerson(){
-    $("tbody tr").click((event)=>{
-        let name = event.currentTarget.firstElementChild.innerHTML;
-        for (const person of allResultsPeople) {
-            if(person.name === name){
-                showStats(person);
-            }
-        }
-    });
+async function asyncCall(id){
+    await makeCall(id);
 }
 
-function findPlanet(){
-    $("tbody tr").click((event)=>{
-        let name = event.currentTarget.firstElementChild.innerHTML;
-        for (const planet of allResultsPlanets) {
-            if(planet.name === name){
-                showStats(planet);
-            }
-        }
-    });
+function makeCall(id){
+    let name;
+    fetch(`https://swapi.co/api/people/${id}`)
+        .then(function (response) {
+            return response.json();
+        })
+        .then(function (response) {
+            name = response.name;
+            $("#dialog").empty();
+            $("#dialog").dialog({
+                title: `${name}`
+            })
+            $("#ui-id-1").css({'background-color':'black','color':'white'});
+            getProperties(response);
+        })
 }
 
-function showStats(person){
-    $("#dialog").empty();
-    let p = $("<p>");
-    p.css("background-color","white","color","black")
-    let dialog = $("#dialog");
-    $("#dialog").dialog({
-        title: ''
-    });
-
-    let entries = Object.entries(person);
-    let k = '';
-    for (const key of entries) {
-        if(typeof key[1] === "object" && key[1].length > 1){
-            for (const string of key[1]) {
-                k = k+"<br>"+string;
-            }
-            p.append(`<p>
-                ${key[0]} : ${k}
-            </p>`);
-        }else{
-            p.append(`<p>
-                ${key[0]} : ${key[1]}
-            </p>`);
+function getProperties(data){
+    let entries = Object.entries(data);
+    $("#dialog").css("background-color","white");
+    $("#dialog").append($(`<ul id="ul">`))
+    let movieCounter = 1;
+    for (const item of entries) {
+        if(item[0] === "hair_color" || item[0] === "skin_color" || item[0] === "eye_color"){
+            $("#ul").append(`<li>${item[0]} : ${item[1]}</li>`);
         }
-        p.appendTo(dialog);
+        if(item[0] === "films"){
+            let obj = item[1];
+            $("#ul").append(`<li>${item[0]}<ul id="ul1"></ul></li>`)
+            for (const item of obj) {
+                $("#ul1").append(`<li data-field="${item}"><span style="color:DeepSkyBlue;cursor: pointer;">Movie ${movieCounter}</span></li>`);
+                movieCounter++;
+            }
+            movieCounter = 1;
+        }
     }
+    let check = true;
+
+    $("#ul1 li").click(function(event){
+        let url = event.currentTarget.dataset.field;
+        let li = event.currentTarget;
+        
+        fetch(url)
+        .then(function (response) {
+            return response.json();
+        })
+        .then(function (response) {
+            if(check === true){
+                $(li).append(`<div id="div" style="background-color:silver">
+                    <p>Title: ${response.title}</p>
+                    <p>Director: ${response.director}</p>
+                    <p>Producer: ${response.producer}</p>
+                    <p>Release Date: ${response.release_date}</p>
+                </div>`);
+                check = false;
+            }else if(check === false){
+                $("#div").remove();
+                check = true;
+            }
+        })
+    })
 }
 
 function getPeople(allPeople) {
@@ -144,18 +161,23 @@ function getPeople(allPeople) {
     $("#planets").addClass("display-none");
 
     $("tbody").empty();
+    
+    let counter = 1;
 
     for (const person of allPeople) {
-        $("tbody").append(`<tr>
+        $("tbody").append(`<tr id="${counter}">
         <td>${person.personname}</td>
         <td>${person.gender}</td>
         <td>${person.birthyear}</td>
         <td>${person.height}</td>
         <td>${person.mass}</td>
         </tr>`);
+        counter++;
     }
-
-    findPerson();
+    $("tbody tr").click((event)=>{
+        let id = event.currentTarget.id;
+        asyncCall(id);
+    })
 }
 
 function getPlanets(allPlanets) {
@@ -181,8 +203,6 @@ function getPlanets(allPlanets) {
         <td>${planet.population}</td>
         </tr>`);
     }
-    
-    findPlanet();
 }
 
 $("#getPeople").click(function () {
@@ -331,14 +351,12 @@ $("th").on("click", (event) => {
                     $("#body").empty();
                     sortirana = allPlanets.sort((f, s) => f.planetname.localeCompare(s.planetname));
                     makeTablePlanets(sortirana);
-                    findPlanet();
                     proverka = false;
                 }else{
                     $(event.currentTarget).css("color", "blue");
                     $("#body").empty();
                     sortirana = allPlanets.sort((f, s) => s.planetname.localeCompare(f.planetname));
                     makeTablePlanets(sortirana);
-                    findPlanet();
                     proverka = true;
                 }
             }
@@ -353,14 +371,12 @@ $("th").on("click", (event) => {
                     $("#body").empty();
                     sortirana1 = allPeople.sort((f, s) => f.personname.localeCompare(s.personname));
                     makeTablePeople(sortirana1);
-                    findPerson();
                     proverka1 = false;
                 }else{
                     $(event.currentTarget).css("color", "blue");
                     $("#body").empty();
                     sortirana1 = allPeople.sort((f, s) => s.personname.localeCompare(f.personname));
                     makeTablePeople(sortirana1);
-                    findPerson();
                     proverka1 = true;
                 }
             }
@@ -370,14 +386,12 @@ $("th").on("click", (event) => {
                     $("#body").empty();
                     sortirana1 = allPeople.sort((f, s) => f.gender.localeCompare(s.gender));
                     makeTablePeople(sortirana1);
-                    findPlanet();
                     proverka2 = false;
                 }else{
                     $(event.currentTarget).css("color", "blue");
                     $("#body").empty();
                     sortirana1 = allPeople.sort((f, s) => s.gender.localeCompare(f.gender));
                     makeTablePeople(sortirana1);
-                    findPlanet();
                     proverka2 = true;
                 }
             }
