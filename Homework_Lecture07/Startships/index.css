@@ -62,3 +62,7 @@ h3{
 .display-none{
     display: none;
 }
+
+div{
+    background-color: white;
+}
