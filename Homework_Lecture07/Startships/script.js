@@ -188,6 +188,7 @@ function createFighter() {
 
     $("#fighters").append(`
     <h3>FIGHTER</h3>
+    <img src="img/fighter.png" alt="fighter">
     <ul>
     <li>Name: ${fighter.name}</li>
     <li>Pilot: ${fighter.pilot}</li>
@@ -217,6 +218,7 @@ function createCargo() {
 
     $("#cargos").append(`
     <h3>CARGO</h3>
+    <img src="img/cargo.jpg" alt="cargo">
     <ul>
     <li>Name: ${cargo.name}</li>
     <li>Pilot: ${cargo.pilot}</li>
@@ -244,7 +246,8 @@ function createMining() {
     let mining = new Mining(getInfo(), getMiningProps());
 
     $("#minings").append(`
-    <h3>MINING</h3>
+    <h3>MINER</h3>
+    <img src="img/miner.jpg" alt="miner">
     <ul>
     <li>Name: ${mining.name}</li>
     <li>Pilot: ${mining.pilot}</li>
