@@ -4,7 +4,7 @@ function getInfo() {
         pilot: $("#pilot").val(),
         fuelTankCapacity: $("#fuelTank").val(),
         currentLocation: $("#currentLocation").val(),
-        type: $("#type").val(),
+        type: $("#type").val()
     }
     return obj;
 }
