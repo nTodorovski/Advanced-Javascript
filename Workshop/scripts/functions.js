@@ -47,21 +47,13 @@ function createPlanet(planet,ship){
         ship.start(planet);
     })
     $(`#repair${planet.name}`).click(function(){
-            planet.repair(ship);
+        planet.repair(ship);
     })
     $(`#refuel${planet.name}`).click(function(){
-        if(planet.shipDocked.includes(ship)){
-            planet.refuel(ship);
-        } else {
-            console.log("You must go to this planet first");
-        }
+        planet.refuel(ship);
     })
     $(`#hireCrew${planet.name}`).click(function(){
-        if(planet.shipDocked.includes(ship)){
-            planet.hireCrewMember(ship);
-        } else {
-            console.log("You must go to this planet first");
-        }
+        planet.hireCrewMember(ship);
     })
 }
 
