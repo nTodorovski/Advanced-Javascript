@@ -8,10 +8,10 @@ let magmus = new Planet("Magmus", 500000, 10000000, 6, 1, "img/Magmus.png");
 let dextriaey = new Planet("Dextriaey", 50000, 500000, 9, 3, "img/Dextriaey.png");
 let b18 = new Planet("B18-1", 250000, 4000000, 12, 2, "img/B18-1.png")
 
-
+//prikazuvanje na brodovite
 showShips();
-
-$("#Starfighter").click(function() {
+// selektiranje na brod i pokazuvanje na planetite
+$("#Starfighter").click(function() { 
     let ship = starFighter;
     showPlanets(ship);
 });
