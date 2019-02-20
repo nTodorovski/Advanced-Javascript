@@ -21,7 +21,7 @@ class Ship {
         this.dockedPlanet = null;
     }
 
-    start(planet) {
+    async start(planet) {
         if (this.dockedPlanet === planet) {
             console.log("You are already on this planet.");
             return;
@@ -50,15 +50,24 @@ class Ship {
         } else {
             console.log(`${this.name} is ready to go.`);
         }
-        
-        if(this.dockedPlanet !== null){
+
+        if (this.dockedPlanet !== null) {
             this.dockedPlanet.shipDocked.pop();
         }
         this.isWorking = true;
+        disableButtons();
         this.fuel = this.fuel - calculateFuel;
 
         let calculateTime = (planet.distance * 1000) / this.speed;
+
+        let eventsArr = SpaceEvent.generateEvents(calculateTime,events);
+
         console.log(`${this.name} started it's journey to ${planet.name}.`);
+        this.stats();
+        for (const event of eventsArr) {
+            await event.startEvent(this);
+        }
+
 
         setTimeout(() => {
             console.log(`${this.name} arrived on ${planet.name}.`)
@@ -82,6 +91,7 @@ class Ship {
             this.dockedPlanet = planet;
             console.log(`${this.name} docked on ${planet.name}.`);
             this.stats();
+            enableBUttons();
         }, 2000);
     }
 }
@@ -114,7 +124,7 @@ class Planet {
         }
 
         let hullPrice = this.getMarketPrice(price.repair);
-        if (ship.hull === ship.maxHull){
+        if (ship.hull === ship.maxHull) {
             console.log("Hull is already at max strength. You can't repair it.");
             return;
         } else {
@@ -135,8 +145,8 @@ class Planet {
             console.log(`${ship.name} is not at this planet. You can't refuel it.`);
             return;
         }
-        
-        if (ship.fuel === ship.maxFuel){
+
+        if (ship.fuel === ship.maxFuel) {
             console.log("Fuel is already at max capacity. You can't refuel it.");
             return;
         }
@@ -175,5 +185,88 @@ class Planet {
             console.log("You hired new crew member.");
             ship.stats();
         }
+    }
+}
+
+class SpaceEvent {
+    constructor(name, description, crewModifier, fuelModifier, hullmodifier) {
+        this.name = name;
+        this.description = description;
+        this.crewModifier = crewModifier;
+        this.fuelModifier = fuelModifier;
+        this.hullmodifier = hullmodifier;
+    }
+
+    startEvent(ship) {
+        return new Promise((resolve, reject) =>{
+            if (!(ship instanceof Ship)) {
+                console.log("This is not a ship.");
+                reject();
+            }
+            let that = this;
+            setTimeout(() => {
+                console.log(that.name,that.description);
+                if(that.crewModifier !== 0){
+                    if(that.crewModifier > 0){
+                        ship.crew = ship.crew + that.crewModifier;
+                        console.log(`You have new a crew member. SHIP CREW: ${ship.crew}`);
+                    } else {
+                        ship.crew = ship.crew + that.crewModifier;
+                        console.log(`You lost a crew member. SHIP CREW: ${ship.crew}`);
+                    }
+                }
+                if(that.fuelModifier !== 0){
+                    if(that.fuelModifier > 0){
+                        ship.fuel = ship.fuel + that.fuelModifier;
+                        console.log(`You have now extra ${that.fuelModifier} fuel in the tank. SHIP FUEL: ${ship.fuel}`);
+                    } else {
+                        ship.fuel = ship.fuel + that.fuelModifier;
+                        console.log(`You lost ${that.fuelModifier} fuel in the tank. SHIP FUEL: ${ship.fuel}`);
+                    }
+                }
+                if(that.hullmodifier !== 0){
+                    if(that.hullmodifier > 0){
+                        ship.hull = ship.hull + that.hullmodifier;
+                        console.log(`You have extra ${that.hullmodifier} hull earned. SHIP HULL: ${ship.hull}`);
+                    } else {
+                        ship.hull = ship.hull + that.hullmodifier;
+                        console.log(`You lost ${that.hullmodifier} hull strength. SHIP HULL: ${ship.hull}`);
+                    }
+                }
+                if(checkShip(ship)){
+                    return;
+                };
+                resolve();
+            }, 4000);
+
+        })
+    }
+
+    static generateEvents(time, arr) {
+        let eventsHappened = [];
+
+        if(time > 0 && time <= 8000) {
+            let number = randomIntFromInterval(0,arr.length-1);
+            eventsHappened.push(arr[number]);
+        }
+        if (time > 8000 && time <= 18000) {
+            for(let i=0;i<2;i++){
+                let number = randomIntFromInterval(0,arr.length-1);
+                eventsHappened.push(arr[number]);
+            }
+        }
+        if (time > 18000 && time <= 26000) {
+            for(let i=0;i<3;i++){
+                let number = randomIntFromInterval(0,arr.length-1);
+                eventsHappened.push(arr[number]);
+            }
+        }
+        if (time > 26000) {
+            for(let i=0;i<4;i++){
+                let number = randomIntFromInterval(0,arr.length-1);
+                eventsHappened.push(arr[number]);
+            }
+        }
+        return eventsHappened;
     }
 }

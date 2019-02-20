@@ -20,7 +20,7 @@ function createShip(ship) {
     </div>`)
 }
 
-function createPlanet(planet,ship){
+function createPlanet(planet, ship) {
     let planets = $("#planets1");
     planets.append(`
     <div class="col">
@@ -43,20 +43,32 @@ function createPlanet(planet,ship){
             </div>
         </div>
     </div>`)
-    $(`#goTo${planet.name}`).click(function(){
+    $(`#goTo${planet.name}`).click(function () {
         ship.start(planet);
     })
-    $(`#repair${planet.name}`).click(function(){
+    $(`#repair${planet.name}`).click(function () {
         planet.repair(ship);
     })
-    $(`#refuel${planet.name}`).click(function(){
+    $(`#refuel${planet.name}`).click(function () {
         planet.refuel(ship);
     })
-    $(`#hireCrew${planet.name}`).click(function(){
+    $(`#hireCrew${planet.name}`).click(function () {
         planet.hireCrewMember(ship);
     })
 }
 
+function disableButtons() {
+    let buttons = $("button");
+    for (const button of buttons) {
+        $(button).attr("disabled", true)
+    }
+}
+function enableBUttons() {
+    let buttons = $("button");
+    for (const button of buttons) {
+        $(button).attr("disabled", false)
+    }
+}
 function showShips() {
     createShip(starFighter);
     createShip(crushinator);
@@ -65,9 +77,52 @@ function showShips() {
 
 function showPlanets(ship) {
     $("#ships").remove();
-    createPlanet(rubicon9,ship);
-    createPlanet(r7,ship);
-    createPlanet(magmus,ship);
-    createPlanet(dextriaey,ship);
-    createPlanet(b18,ship);
+    createPlanet(rubicon9, ship);
+    createPlanet(r7, ship);
+    createPlanet(magmus, ship);
+    createPlanet(dextriaey, ship);
+    createPlanet(b18, ship);
+}
+
+function randomIntFromInterval(min, max) {
+    return Math.floor(Math.random() * (max - min + 1) + min);
+}
+
+function checkShip(ship) {
+    if (ship.fuel <= 0) {
+        $("#planets").remove();
+        $("body").append(`<div class="row">
+        <div id="gameover" class="col"><img id="continue" src="./img/gameover.gif" class="img-fluid" alt="gameover"></div>
+        </div>`);
+
+        $("#continue").click(() => {
+            location.reload();
+        })
+        console.log("GAME OVER!!! You lost your fuel during the flight.");
+        return true;
+    }
+    if (ship.hull <= 0) {
+        $("#planets").remove();
+        $("body").append(`<div class="row">
+        <div id="gameover" class="col"><img id="continue" src="./img/gameover.gif" class="img-fluid" alt="gameover"></div>
+        </div>`);
+
+        $("#continue").click(() => {
+            location.reload();
+        })
+        console.log("GAME OVER!!! You lost your hull during the flight.");
+        return true;
+    }
+    if (ship.crew <= 0) {
+        $("#planets").remove();
+        $("body").append(`<div class="row">
+        <div id="gameover" class="col" ><img id="continue" src="./img/gameover.gif" class="img-fluid" alt="gameover"></div>
+        </div>`);
+
+        $("#continue").click(() => {
+            location.reload();
+        })
+        console.log("GAME OVER!!! You lost your crew during the flight.");
+        return true;
+    }
 }
